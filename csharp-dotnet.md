@@ -1,4 +1,4 @@
-# C# code conventions
+# :zap: C# code conventions
 
 A code standard is essential for development team code readability, consistency, and collaboration. Following industry standards and established guidelines makes code easier to understand, maintain, and extend. Most projects utilize code conventions to enforce a uniform style. Here you can find recommendations defined within inVerita
 
@@ -13,7 +13,38 @@ A code standard is essential for development team code readability, consistency,
 > standards
 
 ## Naming
+1. Use Allman style braces, where each brace begins on a new line. A single line statement block can go without braces but the block must be properly indented on its own line and must not be nested in other statement blocks that use braces. 
+    - Never use single-line form (for example: if (source == null) throw new ArgumentNullException("source");)
+    - Using braces is always accepted, and required if any block of an if/else if/.../else compound statement uses braces or if a single statement body spans multiple lines.
+    - Braces may be omitted only if the body of every block associated with an if/else if/.../else compound statement is placed on a single line.
+> [!NOTE]
+> One exception is that a using statement is permitted to be nested within another using
+> statement by starting on the following line at the same indentation level, even if the
+> nested using contains a controlled block
 
+:x: Bad  
+
+```csharp
+if (timelog.Type == TimelogTypeData.TimeLog)
+    timelogModel.TimeLogHours = timelog.Hours;
+else if (timelog.Type == TimelogTypeData.Overtime)
+{
+    timelogModel.OvertimeHours = timelog.Hours;
+}
+```
+
+
+:white_check_mark: Good  
+```
+if (timelog.Type == TimelogTypeData.TimeLog)
+{
+    timelogModel.TimeLogHours = timelog.Hours;
+}
+else if (timelog.Type == TimelogTypeData.Overtime)
+{
+    timelogModel.OvertimeHours = timelog.Hours;
+}
+```
 
 #### Read more
 
