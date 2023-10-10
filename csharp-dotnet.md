@@ -1,4 +1,4 @@
-# :zap: C# code conventions
+# :zap:C# code conventions
 
 A code standard is essential for development team code readability, consistency, and collaboration. Following industry standards and established guidelines makes code easier to understand, maintain, and extend. Most projects utilize code conventions to enforce a uniform style. Here you can find recommendations defined within inVerita
 
@@ -15,6 +15,12 @@ A code standard is essential for development team code readability, consistency,
 
 ## Overall rules
 1. Prefer clarity over brevity
+2. Avoid obsolete or outdated language constructs
+3. Only catch exceptions that can be properly handled; avoid catching generic exceptions.
+4. Use specific exception types to provide meaningful error messages
+5. Use asynchronous programming with async and await for CPU and I/O-bound operations
+6. Use the language keywords for data types instead of the runtime types. For example, use `string` instead of `System.String`, or `int` instead of `System.Int32`
+7. Avoid overly complex and convoluted code logic
 ## Naming
 1. Use PascalCase for class names and method names
 2. Use camelCase for method arguments, local variables, and private fields.
@@ -39,10 +45,24 @@ A code standard is essential for development team code readability, consistency,
         column++;
     }
     ```
-1. Avoid using abbreviations or acronyms in names, except for widely known and accepted abbreviations
-2. Use meaningful and descriptive namespaces that follow the reverse domain name notation
-3. Choose assembly names that represent the primary purpose of the assembly
+6. Avoid using abbreviations or acronyms in names, except for widely known and accepted abbreviations
+7. Use meaningful and descriptive namespaces that follow the reverse domain name notation
+8. Choose assembly names that represent the primary purpose of the assembly
 
+## Types
+- Use var only when a reader can infer the type from the expression. Readers view our samples on the docs platform. They don't have hover or tool tips that display the type of variables
+- use int
+- int vs inst32.convert (floor vs round)
+- new() carefully
+- ...
+- use ctors
+- use private by default + setters
+- ...
+- use string.empty
+- concatenations
+- SB only after 7 concats
+- nameof
+- do not throw;
 
 ## Formatting
 1. Use Allman style braces, where each brace begins on a new line. A single line statement block can go without braces but the block must be properly indented on its own line and must not be nested in other statement blocks that use braces. 
