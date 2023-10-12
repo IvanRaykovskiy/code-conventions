@@ -12,6 +12,17 @@ A code standard is essential for development team code readability, consistency,
 > configurations to enforce corporate-wide standards, team standards, and even granular project 
 > standards
 
+## Table of contents
+
+[Overall rules](#overall-rules)  
+[Naming](#naming)  
+[Types](#types)  
+[Formatting](#formatting)  
+[Strings](#strings)  
+[LINQ](#linq)  
+
+---
+
 
 ## Overall rules
 1. Prefer clarity over brevity
@@ -126,9 +137,25 @@ A code standard is essential for development team code readability, consistency,
 > statement by starting on the following line at the same indentation level, even if the
 > nested using contains a controlled block
 
-2. Use braces with && and operations to keep priority
-3. Place method on new line (LINQ) and other .
-4. TODO
+2. Use braces to explicitly show required execution order without guessing operators priority
+   
+    :x: Bad  
+    ```csharp
+    private bool DatesIntersected(DateTime rangeStart, DateTime rangeEnd, DateTime from, DateTime to)
+    {
+        return rangeStart >= from && rangeStart <= to || rangeEnd >= from && rangeEnd <= to;
+    }
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    private bool DatesIntersected(DateTime rangeStart, DateTime rangeEnd, DateTime from, DateTime to)
+    {
+        return (rangeStart >= from && rangeStart <= to) || (rangeEnd >= from && rangeEnd <= to);
+    }
+    ```
+
+3. TODO
 
 
 ## Coding
@@ -162,6 +189,7 @@ A code standard is essential for development team code readability, consistency,
         }
     }
     ```
+## Strings
 
 ## LINQ
 
@@ -180,7 +208,33 @@ A code standard is essential for development team code readability, consistency,
                                 .ToList();
     ```
 
+## Comments
+1. Prefer method extraction with appropriate name instead of putting inline comments with explanation  
 
+    :x: Bad  
+    ```csharp
+    // Checking dates intersection before doing work
+    if((leave.Start >= fromDate && leave.Start <= toDate) || (leave.End >= fromDate && leave.End <= toDate))
+    {
+        // Do some work
+    }
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    if(DatesIntersected(leave.Start, leave.End, fromDate, toDate))
+    {
+        // Do some work
+    }
+
+    private bool DatesIntersected(DateTime rangeStart, DateTime rangeEnd, DateTime from, DateTime to)
+    {
+        return (rangeStart >= from && rangeStart <= to) || (rangeEnd >= from && rangeEnd <= to);
+    }
+
+    ```
+2. Place the comment on a separate line, not at the end of a line of code.
+3. Make 1 blank line between comment and previous line of code
 
 #### Read more
 
