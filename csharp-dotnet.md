@@ -24,9 +24,10 @@ A code standard is essential for development team code readability, consistency,
 ## Naming
 1. Use PascalCase for class names and method names
 2. Use camelCase for method arguments, local variables, and private fields.
-3. Use PascalCase for constant names, both fields and local constants.
-4. Private instance fields start with an underscore `_`
-5. Avoid using single-letter names, almost in any situation it's better to use meaningful name even for small iteration  
+3. Private instance fields start with an underscore `_`
+4. Use PascalCase for constant names, both fields and local constants.
+5. When naming an interface, use pascal casing in addition to prefixing the name with an I. This clearly indicates to consumers that it's an interface: `ITeamService`, `INotifyManager`, etc.
+6. Avoid using single-letter names, almost in any situation it's better to use meaningful name even for small iteration  
    
     :x: Bad  
     ```csharp
@@ -45,28 +46,57 @@ A code standard is essential for development team code readability, consistency,
         column++;
     }
     ```
-6. Avoid using abbreviations or acronyms in names, except for widely known and accepted abbreviations
-7. Use meaningful and descriptive namespaces that follow the reverse domain name notation
-8. Choose assembly names that represent the primary purpose of the assembly
+7. Avoid using abbreviations or acronyms in names, except for widely known and accepted abbreviations
+8. Use meaningful and descriptive namespaces that follow the reverse domain name notation
+9. Choose assembly names that represent the primary purpose of the assembly
 
 ## Types
-- Use var only when a reader can infer the type from the expression. Readers view our samples on the docs platform. They don't have hover or tool tips that display the type of variables
-- use int
-- int vs inst32.convert (floor vs round)
-- new() carefully
-- ...
-- use ctors
-- use private by default + setters
-- ...
-- use string.empty
-- concatenations
-- SB only after 7 concats
-- nameof
-- do not throw;
+1. Use var only when a reader can infer the type from the expression. Try to give either self-explanatory name or set type explicitly instead of `var` (or both)     
+
+    :x: Bad  
+    ```csharp
+    // 1st example (redundant)
+    List<ProjectViewModel> projectViewModels = new List<ProjectViewModel>();
+
+    // 2nd example (too generic)
+    var entity = GetEntityById(projectId);
+    ```
+    :white_check_mark: Good  
+
+    ```csharp
+    var projectViewModels = new List<ProjectViewModel>();
+
+    // 2nd example (good name and method name)
+    var project = GetProjectById(projectId);
+    ```
+
+2. use int
+3. int vs inst32.convert (floor vs round)
+4. new() carefully
+5. ...
+6. use ctors
+7. use private by default + setters
+8. ...
+9.  use string.empty
+10. concatenations
+11. SB only after 7 concats
+12. nameof
+13. do not throw;
 
 ## Formatting
 1. Use Allman style braces, where each brace begins on a new line. A single line statement block can go without braces but the block must be properly indented on its own line and must not be nested in other statement blocks that use braces. 
-    - Never use single-line form (for example: if (source == null) throw new ArgumentNullException("source");)
+    - Never use single-line form  
+
+        :x: Bad  
+        ```csharp
+        if (source == null) throw new ArgumentNullException("source");
+        ```
+
+        :white_check_mark: Good  
+        ```csharp
+        if (source == null) 
+            throw new ArgumentNullException("source");
+        ```
     - Using braces is always accepted, and required if any block of an if/else if/.../else compound statement uses braces or if a single statement body spans multiple lines.
     - Braces may be omitted only if the body of every block associated with an if/else if/.../else compound statement is placed on a single line.
 
@@ -96,8 +126,59 @@ A code standard is essential for development team code readability, consistency,
 > statement by starting on the following line at the same indentation level, even if the
 > nested using contains a controlled block
 
-1. Place method on new line (LINQ) and other .
-2. TODO
+2. Use braces with && and operations to keep priority
+3. Place method on new line (LINQ) and other .
+4. TODO
+
+
+## Coding
+1. Prefer constructors over initialization to prevent bugs and to abstract user from how this object should be initialized  
+
+    :x: Bad  
+    ```csharp
+    userLeaveDays.Select(l => new VacationViewModel
+            {
+                StartDate = l.StartsAt,
+                EndDate = l.EndsAt,
+                UserId = user.Id,
+                Status = TicketStatusType.Approved,
+            }).ToList();
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    userLeaveDays.Select(l => new Vacation(user.Id, leave, TicketStatusType.Approved))
+                 .ToList();
+
+    // VacationViewModel.cs
+    public class VacationViewModel
+    {
+        public VacationViewModel(Guid userId, LeaveDay leave, TicketStatusType statusType)
+        {
+            UserId = userId;
+            StartDate = leave.StartsAt;
+            EndDate = leave.EndsAt;
+            Status = statusType;
+        }
+    }
+    ```
+
+## LINQ
+
+1. Use multiline for better readability of LINQ extension methods
+
+    :x: Bad  
+    ```csharp
+    var adminClaims = _dbContext.Claims.Where(c => c.UserId == adminUserId).Select(c => c.ClaimValue).ToList();
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    var adminClaims = _dbContext.AspNetUsersClaims
+                                .Where(c => c.UserId == adminUserId)
+                                .Select(c => c.ClaimValue)
+                                .ToList();
+    ```
 
 
 
