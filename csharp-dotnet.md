@@ -81,35 +81,46 @@ A code standard is essential for development team code readability, consistency,
     var project = GetProjectById(projectId);
     ```
 
-2. Use `new()` initialization syntax in explicit way and try to avoiding its usage without type definition
+2. From C# 9.0 you also can use `new()` initialization syntax in explicit way. But try to avoiding its usage without type definition
 
     :x: Bad  
     ```csharp
-    _maps = new()
-    {
-        { PaidVacation, VacationType.Normal },
-        { SickLeave, VacationType.SickLeave },
-        { NonPaidVacation, VacationType.WithoutPay },
-    };
+    // ids was declared earlier in file
+    ids = new();    
     ```
     :white_check_mark: Good  
 
     ```csharp
-    _maps = new()
+    List<int> ids = new();
+    ```
+
+3. From C# 6.0 prefer using key value based syntax for Dictionary initialization
+
+    :x: Bad  
+    ```csharp
+    var koef = new Dictionary<string, int>();
+    koef["first"] = 10;
+    koef["second"] = 20;
+    koef["third"] = 30; 
+    ```
+    :white_check_mark: Good  
+
+    ```csharp
+    var koef = new Dictionary<string, int>
     {
-        { PaidVacation, VacationType.Normal },
-        { SickLeave, VacationType.SickLeave },
-        { NonPaidVacation, VacationType.WithoutPay },
+        ["first"] = 10,
+        ["second"] = 20,
+        ["third"] = 30
     };
     ```
 
-3. use explicit typing to determine the type of the loop variable in foreach loops
-4. use int
-5. int vs inst32.convert (floor vs round)
-6. ...
-7. use private by default + setters
+4. use explicit typing to determine the type of the loop variable in foreach loops
+5. use int
+6. int vs inst32.convert (floor vs round)
+7. ...
+8. use private by default + setters
 
-8.  do not throw;
+9.  do not throw;
 
 ## Formatting
 1. Use Allman style braces, where each brace begins on a new line. A single line statement block can go without braces but the block must be properly indented on its own line and must not be nested in other statement blocks that use braces. 
@@ -209,6 +220,7 @@ A code standard is essential for development team code readability, consistency,
         }
     }
     ```
+2. Use `Func<>` and `Action<>` instead of defining delegate types
 ## Strings
 
 1. Use string interpolation to concatenate short strings, as shown in the following code  
