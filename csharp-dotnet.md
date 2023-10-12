@@ -81,18 +81,35 @@ A code standard is essential for development team code readability, consistency,
     var project = GetProjectById(projectId);
     ```
 
-2. use int
-3. int vs inst32.convert (floor vs round)
-4. new() carefully
-5. ...
-6. use ctors
+2. Use `new()` initialization syntax in explicit way and try to avoiding its usage without type definition
+
+    :x: Bad  
+    ```csharp
+    _maps = new()
+    {
+        { PaidVacation, VacationType.Normal },
+        { SickLeave, VacationType.SickLeave },
+        { NonPaidVacation, VacationType.WithoutPay },
+    };
+    ```
+    :white_check_mark: Good  
+
+    ```csharp
+    _maps = new()
+    {
+        { PaidVacation, VacationType.Normal },
+        { SickLeave, VacationType.SickLeave },
+        { NonPaidVacation, VacationType.WithoutPay },
+    };
+    ```
+
+3. use explicit typing to determine the type of the loop variable in foreach loops
+4. use int
+5. int vs inst32.convert (floor vs round)
+6. ...
 7. use private by default + setters
-8. ...
-9.  use string.empty
-10. concatenations
-11. SB only after 7 concats
-12. nameof
-13. do not throw;
+
+8.  do not throw;
 
 ## Formatting
 1. Use Allman style braces, where each brace begins on a new line. A single line statement block can go without braces but the block must be properly indented on its own line and must not be nested in other statement blocks that use braces. 
@@ -137,7 +154,10 @@ A code standard is essential for development team code readability, consistency,
 > statement by starting on the following line at the same indentation level, even if the
 > nested using contains a controlled block
 
-2. Use braces to explicitly show required execution order without guessing operators priority
+2. Write only one statement per line.
+3. Write only one declaration per line.
+4. Add at least one blank line between method definitions and property definitions
+5. Use braces to explicitly show required execution order without guessing operators priority
    
     :x: Bad  
     ```csharp
@@ -155,7 +175,7 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 
-3. TODO
+6. TODO
 
 
 ## Coding
@@ -191,6 +211,64 @@ A code standard is essential for development team code readability, consistency,
     ```
 ## Strings
 
+1. Use string interpolation to concatenate short strings, as shown in the following code  
+
+    :x: Bad  
+    ```csharp
+    var message = "Project:" + projectName "is Closed";
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    var message = $"Project: {projectName} is Closed";
+    ```
+
+2. Use `string.Empty` instead of just `""`
+3. Use `StringBuilder` to append strings in loops, especially when you're working with large amounts of text  
+   
+   :x: Bad  
+    ```csharp
+    string output = string.Empty;
+    foreach(Project project in ProjectList)
+    {
+        output += $"<h2>Project name: {project.Name}</h2>";
+    }
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    var sb = new StringBuilder();
+    foreach(Project project in ProjectList)
+    {
+        sb.Append($"<h2>Project name: {project.Name}</h2>");
+    }
+    ```
+
+    > [!IMPORTANT]  
+    > There is some overhead associated with creating a StringBuilder object, both in time and memory.  
+    > As a rule of thumb use StringBuilder if you need to dynamically concatenate more than 7-10 strings. 
+    > In other cases just use `+` as it is optimized to `Concat()` method
+    
+4. Use `nameof` instead of string names of values or properties  
+
+    :x: Bad  
+    ```csharp
+    if(status == TicketStatus.Approved)
+    {
+        return $"Your ticket was Approved";
+    }
+
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    if(status == TicketStatus.Approved)
+    {
+        return $"Your ticket was {nameof(TicketStatus.Approved)}";
+    }
+    ```
+   
+
 ## LINQ
 
 1. Use multiline for better readability of LINQ extension methods
@@ -203,9 +281,9 @@ A code standard is essential for development team code readability, consistency,
     :white_check_mark: Good  
     ```csharp
     var adminClaims = _dbContext.AspNetUsersClaims
-                                .Where(c => c.UserId == adminUserId)
-                                .Select(c => c.ClaimValue)
-                                .ToList();
+                            .Where(c => c.UserId == adminUserId)
+                            .Select(c => c.ClaimValue)
+                            .ToList();
     ```
 
 ## Comments
