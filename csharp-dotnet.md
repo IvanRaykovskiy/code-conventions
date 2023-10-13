@@ -18,6 +18,7 @@ A code standard is essential for development team code readability, consistency,
 [Naming](#naming)  
 [Types](#types)  
 [Formatting](#formatting)  
+[Coding](#coding)  
 [Strings](#strings)  
 [LINQ](#linq)  
 
@@ -114,7 +115,9 @@ A code standard is essential for development team code readability, consistency,
     };
     ```
 
-4. use explicit typing to determine the type of the loop variable in foreach loops
+4. Use explicit typing to determine the type of the loop variable in foreach loops
+
+
 5. use int
 6. int vs inst32.convert (floor vs round)
 7. ...
@@ -220,7 +223,69 @@ A code standard is essential for development team code readability, consistency,
         }
     }
     ```
-2. Use `Func<>` and `Action<>` instead of defining delegate types
+2. Use `Func<>` and `Action<>` in-built delegates instead of defining your own delegate types whenever possible
+
+    :x: Bad  
+    ```csharp
+    public delegate double CalculateDelegate(int value1, int value2);
+
+    public static double Calculate(int value1, int value2)
+    {
+        return value1 * value2;
+    }
+
+    CalculateDelegate ProcessMath = Calculate;
+    double result = ProcessMath(16, 4);
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    public static double Calculate(int value1, int value2)
+    {
+        return value1 * value2;
+    }
+
+    Func<int, int, double> ProcessMath = new(Calculate);
+    double result = ProcessMath(16, 4);
+    ```
+3. Do not return true-false from boolean expression
+
+    :x: Bad  
+    ```csharp
+    if (day.Date > currentDate.Date)
+        return true;
+    else
+        return false;
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    return day.Date > currentDate.Date;
+    ```
+4. Use `&&` instead of `&` and `||` instead of `|` when you perform comparisons
+
+    :x: Bad  
+    ```csharp
+    if (teamLead != null & teamLead.DeleteAt == string.Empty)
+    {
+        reporter = teamLead.Id;
+    }
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    if (teamLead != null && teamLead.DeleteAt == string.Empty)
+    {
+        reporter = teamLead.Id;
+    }
+    ```
+
+    > [!NOTE]  
+    > If the `teamLead` is null, the second clause in the if statement would cause a run-time error. But the `&&` operator
+    > short-circuits when the first expression is false. That is, it doesn't evaluate the second expression. 
+    > The `&` operator would evaluate both, resulting in a run-time error when `teamLead` is null.
+
+
 ## Strings
 
 1. Use string interpolation to concatenate short strings, as shown in the following code  
@@ -257,8 +322,8 @@ A code standard is essential for development team code readability, consistency,
     ```
 
     > [!IMPORTANT]  
-    > There is some overhead associated with creating a StringBuilder object, both in time and memory.  
-    > As a rule of thumb use StringBuilder if you need to dynamically concatenate more than 7-10 strings. 
+    > There is some overhead associated with creating a `StringBuilder` object, both in time and memory.  
+    > As a rule of thumb use `StringBuilder` if you need to dynamically concatenate more than 7-10 strings. 
     > In other cases just use `+` as it is optimized to `Concat()` method
     
 4. Use `nameof` instead of string names of values or properties  
