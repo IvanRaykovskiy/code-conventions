@@ -63,6 +63,7 @@ A code standard is essential for development team code readability, consistency,
 9. Choose assembly names that represent the primary purpose of the assembly
 
 ## Types
+
 1. Use var only when a reader can infer the type from the expression. Try to give either self-explanatory name or set type explicitly instead of `var` (or both)     
 
     :x: Bad  
@@ -115,11 +116,22 @@ A code standard is essential for development team code readability, consistency,
     };
     ```
 
-4. Use explicit typing to determine the type of the loop variable in foreach loops
+4. Use explicit typing to determine the type of the loop variable in foreach loops if it's not clear from context (e.g. ids could be int, string or guid)
 
+    :x: Bad  
+    ```csharp
+    foreach(var id in userIds)
+    {
+    }
+    ```
 
-5. use int
-6. int vs inst32.convert (floor vs round)
+    :white_check_mark: Good  
+    ```csharp
+    foreach(Guid id in userIds)
+    {
+    }
+    ```
+
 7. ...
 8. use private by default + setters
 
@@ -163,10 +175,10 @@ A code standard is essential for development team code readability, consistency,
             timelogModel.OvertimeHours = timelog.Hours;
         }
         ```
-> [!NOTE]  
-> One exception is that a using statement is permitted to be nested within another using
-> statement by starting on the following line at the same indentation level, even if the
-> nested using contains a controlled block
+        > [!NOTE]  
+        > One exception is that a using statement is permitted to be nested within another using
+        > statement by starting on the following line at the same indentation level, even if the
+        > nested using contains a controlled block
 
 2. Write only one statement per line.
 3. Write only one declaration per line.
@@ -189,7 +201,7 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 
-6. TODO
+6. Use namespace from C# new
 
 
 ## Coding
@@ -198,12 +210,12 @@ A code standard is essential for development team code readability, consistency,
     :x: Bad  
     ```csharp
     userLeaveDays.Select(l => new VacationViewModel
-            {
-                StartDate = l.StartsAt,
-                EndDate = l.EndsAt,
-                UserId = user.Id,
-                Status = TicketStatusType.Approved,
-            }).ToList();
+                    {
+                        StartDate = l.StartsAt,
+                        EndDate = l.EndsAt,
+                        UserId = user.Id,
+                        Status = TicketStatusType.Approved,
+                    }).ToList();
     ```
 
     :white_check_mark: Good  
@@ -248,7 +260,7 @@ A code standard is essential for development team code readability, consistency,
     Func<int, int, double> ProcessMath = new(Calculate);
     double result = ProcessMath(16, 4);
     ```
-3. Do not return true-false from boolean expression
+3. Do not return `true`/`false` if you already have a boolean expression
 
     :x: Bad  
     ```csharp
@@ -284,6 +296,21 @@ A code standard is essential for development team code readability, consistency,
     > If the `teamLead` is null, the second clause in the if statement would cause a run-time error. But the `&&` operator
     > short-circuits when the first expression is false. That is, it doesn't evaluate the second expression. 
     > The `&` operator would evaluate both, resulting in a run-time error when `teamLead` is null.
+
+5. Carefully use proper casting/convertion `(int)` vs `Convert.ToInt32()` depend of needs. `(int)` requires numeric value and behaves as `Math.Floor()`, but `Convert.ToInt32()` behaves as `Math.Round()`
+    > [!NOTE]
+    >    ```csharp
+    >    float input = 2.6f;
+    >
+    >    Console.WriteLine($"value = {input}");
+    >    Console.WriteLine($"(int)value = {(int)input}");
+    >    Console.WriteLine($"Convert.ToInt32(value) = {Convert.ToInt32(input)}");
+    >
+    >    // Output
+    >    // value = 2.6
+    >    // (int)value = 2
+    >    // Convert.ToInt32(value) = 3
+    >    ```
 
 
 ## Strings
@@ -362,7 +389,38 @@ A code standard is essential for development team code readability, consistency,
                             .Select(c => c.ClaimValue)
                             .ToList();
     ```
+2. Use meaningful names for query variables
 
+    :x: Bad  
+    ```csharp
+    var seattleCustomers = from c in customers
+                           where c.City == "Seattle"
+                           select c.Name;
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    var seattleCustomers = from customer in customers
+                           where customer.City == "Seattle"
+                           select customer.Name;
+    ```
+3. Use multiple from clauses instead of a join clause to access inner collections. For example, a collection of Student objects might each contain a collection of test scores
+   
+   :x: Bad  
+    ```csharp
+    var scoreQuery = from student in students
+                     join score in student.Scores on student.Id equals score.studentId
+                     where score > 90
+                     select new { LastName = student.LastName, score };
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    var scoreQuery = from student in students
+                     from score in student.Scores
+                     where score > 90
+                     select new { LastName = student.LastName, score };
+    ```
 ## Comments
 1. Prefer method extraction with appropriate name instead of putting inline comments with explanation  
 
