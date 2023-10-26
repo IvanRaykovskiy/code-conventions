@@ -20,6 +20,7 @@ A code standard is essential for development team code readability, consistency,
 [Formatting](#formatting)  
 [Coding](#coding)  
 [Strings](#strings)  
+[Exceptions](#exceptions)  
 [LINQ](#linq)  
 
 ---
@@ -27,16 +28,16 @@ A code standard is essential for development team code readability, consistency,
 
 ## Overall rules
 1. Prefer clarity over brevity
-2. Avoid obsolete or outdated language constructs
-3. Only catch exceptions that can be properly handled; avoid catching generic exceptions.
-4. Use specific exception types to provide meaningful error messages
-5. Use asynchronous programming with async and await for CPU and I/O-bound operations
-6. Use the language keywords for data types instead of the runtime types. For example, use `string` instead of `System.String`, or `int` instead of `System.Int32`
-7. Avoid overly complex and convoluted code logic
+2. Avoid overly complex and convoluted code logic
+3. Avoid obsolete or outdated language constructs
+4. Only catch exceptions that can be properly handled; avoid catching generic exceptions.
+5. Use specific exception types to provide meaningful error messages
+6. Use asynchronous programming with `async` and `await` for CPU and I/O-bound operations
+7. Use the language keywords for data types instead of the runtime types. For example, use `string` instead of `System.String`, or `int` instead of `System.Int32`
 ## Naming
 1. Use PascalCase for class names and method names
 2. Use camelCase for method arguments, local variables, and private fields.
-3. Private instance fields start with an underscore `_`
+3. Use `_` (underscore)  for private instance fields
 4. Use PascalCase for constant names, both fields and local constants.
 5. When naming an interface, use pascal casing in addition to prefixing the name with an I. This clearly indicates to consumers that it's an interface: `ITeamService`, `INotifyManager`, etc.
 6. Avoid using single-letter names, almost in any situation it's better to use meaningful name even for small iteration  
@@ -132,11 +133,6 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 
-7. ...
-8. use private by default + setters
-
-9.  do not throw;
-
 ## Formatting
 1. Use Allman style braces, where each brace begins on a new line. A single line statement block can go without braces but the block must be properly indented on its own line and must not be nested in other statement blocks that use braces. 
     - Never use single-line form  
@@ -201,26 +197,53 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 
-6. Use namespace from C# new
-
-
-## Coding
-1. Prefer constructors over initialization to prevent bugs and to abstract user from how this object should be initialized  
-
+6. Use file scoped namespace declarations (available from C# 10) to reduce code nesting  
+   
     :x: Bad  
     ```csharp
-    userLeaveDays.Select(l => new VacationViewModel
-                    {
-                        StartDate = l.StartsAt,
-                        EndDate = l.EndsAt,
-                        UserId = user.Id,
-                        Status = TicketStatusType.Approved,
-                    }).ToList();
+    namespace InVerita.Implementations.VacationService
+    {
+        public class HolidayService : IHolidayService
+        {
+            public List<Holiday> GetHolidays() => _appDbContext.Holidays().ToList();
+            //...
+        }
+    }
     ```
 
     :white_check_mark: Good  
     ```csharp
-    userLeaveDays.Select(l => new Vacation(user.Id, leave, TicketStatusType.Approved))
+    namespace InVerita.Implementations.VacationService
+    
+    public class HolidayService : IHolidayService
+    {
+        public List<Holiday> GetHolidays() => _appDbContext.Holidays().ToList();
+        //...
+    }    
+    ```
+
+## Coding
+1. Use proper and explicit access modifiers depend on need and try to use the most restricted access available for this declaration
+     - Prefer `internal` over `public` if possible
+     - Prefer `protected` over `public` if possible
+     - Prefer `private setters` as default instead of making all public
+2. User `private` keyword explicitly
+2. Prefer constructors over initialization to prevent bugs and to abstract user from how this object should be initialized  
+
+    :x: Bad  
+    ```csharp
+    userLeaveDays.Select(leave => new VacationViewModel
+    {
+        StartDate = leave.StartsAt,
+        EndDate = leave.EndsAt,
+        UserId = user.Id,
+        Status = TicketStatusType.Approved,
+    }).ToList();
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    userLeaveDays.Select(leave => new Vacation(user.Id, leave, TicketStatusType.Approved))
                  .ToList();
 
     // VacationViewModel.cs
@@ -235,7 +258,7 @@ A code standard is essential for development team code readability, consistency,
         }
     }
     ```
-2. Use `Func<>` and `Action<>` in-built delegates instead of defining your own delegate types whenever possible
+3. Use `Func<>` and `Action<>` in-built delegates instead of defining your own delegate types whenever possible
 
     :x: Bad  
     ```csharp
@@ -260,7 +283,9 @@ A code standard is essential for development team code readability, consistency,
     Func<int, int, double> ProcessMath = new(Calculate);
     double result = ProcessMath(16, 4);
     ```
-3. Do not return `true`/`false` if you already have a boolean expression
+    > [!NOTE]  
+    > You can violate above rule in case you really need named custom delegate, that will be used in various places helping you define business/domain logic
+4. Do not return `true`/`false` if you already have a boolean expression
 
     :x: Bad  
     ```csharp
@@ -274,7 +299,7 @@ A code standard is essential for development team code readability, consistency,
     ```csharp
     return day.Date > currentDate.Date;
     ```
-4. Use `&&` instead of `&` and `||` instead of `|` when you perform comparisons
+5. Use `&&` instead of `&` and `||` instead of `|` when you perform comparisons
 
     :x: Bad  
     ```csharp
@@ -297,21 +322,45 @@ A code standard is essential for development team code readability, consistency,
     > short-circuits when the first expression is false. That is, it doesn't evaluate the second expression. 
     > The `&` operator would evaluate both, resulting in a run-time error when `teamLead` is null.
 
-5. Carefully use proper casting/convertion `(int)` vs `Convert.ToInt32()` depend of needs. `(int)` requires numeric value and behaves as `Math.Floor()`, but `Convert.ToInt32()` behaves as `Math.Round()`
-    > [!NOTE]
-    >    ```csharp
-    >    float input = 2.6f;
-    >
-    >    Console.WriteLine($"value = {input}");
-    >    Console.WriteLine($"(int)value = {(int)input}");
-    >    Console.WriteLine($"Convert.ToInt32(value) = {Convert.ToInt32(input)}");
-    >
-    >    // Output
-    >    // value = 2.6
-    >    // (int)value = 2
-    >    // Convert.ToInt32(value) = 3
-    >    ```
+6. Use DependencyInjection instead of creating instances for loose coupling and better code maintanability and testability
+   
+   :x: Bad  
+    ```csharp
+    public class ReportExporter : IExporter
+    {
+        private readonly IStageService _stageService;
 
+        public ReportExporter(IStageService stageService)
+        {
+            _stageService = new StageService();
+        }
+
+        public async Task<MemoryStream> GetReport(DateTime month, CancellationToken token)
+        {    
+            var filtered = await _stageService.GetReport(month, token);
+            // ...
+        }
+    }
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    public class ReportExporter : IExporter
+    {
+        private readonly IStageService _stageService;
+
+        public ReportExporter(IStageService stageService)
+        {
+            _stageService = stageService;
+        }
+
+        public async Task<MemoryStream> GetReport(DateTime month, CancellationToken token)
+        {    
+            var filtered = await _stageService.GetReport(month, token);
+            // ...
+        }
+    }
+    ```
 
 ## Strings
 
@@ -371,8 +420,60 @@ A code standard is essential for development team code readability, consistency,
         return $"Your ticket was {nameof(TicketStatus.Approved)}";
     }
     ```
-   
+## Async code
+1. Await tasks always for preventing unpredictable results
+2. Use postfix `Async` in method namings only if you have mix of sync and async methods or any kind of migration. If your code is written with initial async execution - avoid this postfix in method names
 
+## Exceptions
+1. Handle common conditions without throwing exceptions - exceptions are more expensive
+
+    :x: Bad  
+    ```csharp
+    try
+    {
+        dbConnection.Close();
+    }
+    catch (InvalidOperationException ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    ```
+    :white_check_mark: Good  
+    ```csharp
+    if (dbConnection.State != ConnectionState.Closed)
+    {
+        dbConnection.Close();
+    }
+    ```
+2. Keep the original stack trace information with the exception, by using the `throw` statement without specifying the exception or re-throwing it
+
+    :x: Bad  
+    ```csharp
+    try
+    {
+        
+    }
+    catch (ArgumentException ex)
+    {
+        throw ex;
+    }
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    try
+    {
+        
+    }
+    catch (ArgumentException)
+    {
+        throw;
+    }
+    ```
+3. In a lot of cases try to return `null` (or `default`) instead of throwing an exception. Also you ca return Empty collections or use **Null object pattern**
+4. Use the **predefined** .NET exception types. Introduce a new exception class only when a predefined one doesn't apply. For example:
+   - If a property set or method call isn't appropriate given the object's current state, throw an InvalidOperationException exception.
+   - If invalid parameters are passed, throw an ArgumentException exception or one of the predefined classes that derive from ArgumentException.
 ## LINQ
 
 1. Use multiline for better readability of LINQ extension methods
@@ -404,7 +505,23 @@ A code standard is essential for development team code readability, consistency,
                            where customer.City == "Seattle"
                            select customer.Name;
     ```
-3. Use multiple from clauses instead of a join clause to access inner collections. For example, a collection of Student objects might each contain a collection of test scores
+3. Use IQueryable and IEnumerable accordingly. Prefer filtering occurring on Database or any other provider
+
+     :x: Bad  
+    ```csharp
+    public List<User> GetUsers() => 
+        _dbContext.Users.ToList()
+                        .Where(user => user.IsActive)
+                        .ToList();
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+     public List<User> GetUsers() => 
+        _dbContext.Users.Where(user => user.IsActive)
+                        .ToList();
+    ```
+4. Use multiple from clauses instead of a join clause to access inner collections. For example, a collection of Student objects might each contain a collection of test scores
    
    :x: Bad  
     ```csharp
@@ -448,6 +565,4 @@ A code standard is essential for development team code readability, consistency,
     ```
 2. Place the comment on a separate line, not at the end of a line of code.
 3. Make 1 blank line between comment and previous line of code
-
-#### Read more
 
