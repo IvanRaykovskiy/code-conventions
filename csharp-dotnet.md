@@ -20,6 +20,7 @@ A code standard is essential for development team code readability, consistency,
 [Formatting](#formatting)  
 [Coding](#coding)  
 [Strings](#strings)  
+[Async code](#async-code)  
 [Exceptions](#exceptions)  
 [LINQ](#linq)  
 
@@ -421,8 +422,13 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 ## Async code
-1. Await tasks always for preventing unpredictable results
-2. Use postfix `Async` in method namings only if you have mix of sync and async methods or any kind of migration. If your code is written with initial async execution - avoid this postfix in method names
+1. Await tasks **always** for preventing unpredictable results
+2. Return only `Task` or `Task<T>` from async method
+3. Use postfix `Async` in method namings only if you have mix of sync and async methods or any kind of migration. If your code is written with initial async execution - avoid this postfix in method names
+4. Provide `CancellationToken` to methods that could be interrupted
+5. Use `WhenAny`, `WhenAll` methods instead of `WaitAny` and `WaitAll` to avoid blocking
+6. Use `ConfigureAwait(false)` only for purpose, e.g. in .NET Core and above versions there is no synchronization context - so it's no needed in most cases. For details check documentation
+7. Create a task to execute code using `Task.Run` not `Task constructor` or `Task.Start`
 
 ## Exceptions
 1. Handle common conditions without throwing exceptions - exceptions are more expensive
