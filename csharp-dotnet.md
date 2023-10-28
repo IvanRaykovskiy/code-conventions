@@ -173,13 +173,13 @@ A code standard is essential for development team code readability, consistency,
         }
         ```
         > [!NOTE]  
-        > One exception is that a using statement is permitted to be nested within another using
+        > One exception is that a `using` statement is permitted to be nested within another `using`
         > statement by starting on the following line at the same indentation level, even if the
-        > nested using contains a controlled block
+        > nested `using` contains a controlled block
 
 2. Write only one statement per line.
 3. Write only one declaration per line.
-4. Add at least one blank line between method definitions and property definitions
+4. Add at least one blank line between methods definitions and properties definitions
 5. Use braces to explicitly show required execution order without guessing operators priority
    
     :x: Bad  
@@ -229,7 +229,7 @@ A code standard is essential for development team code readability, consistency,
      - Prefer `protected` over `public` if possible
      - Prefer `private setters` as default instead of making all public
 2. User `private` keyword explicitly
-2. Prefer constructors over initialization to prevent bugs and to abstract user from how this object should be initialized  
+2. Prefer constructors over initialization to prevent bugs and to abstract user from guessing how this object should be initialized  
 
     :x: Bad  
     ```csharp
@@ -362,6 +362,38 @@ A code standard is essential for development team code readability, consistency,
         }
     }
     ```
+7. Avoid combining 2 and more ternary conditional operators for defining logic. In such cases - extract method with meaningful name and replace conditions with `if/else` statements
+
+    :x: Bad  
+    ```csharp
+    // some code before
+    total.DayType = day.DayOfWeek == DayOfWeek.Sunday || day.DayOfWeek == DayOfWeek.Saturday 
+        ? TimeLogDayType.Weekends 
+        : holidays.Any(h => h.StartDate.Date <= day && h.EndDate.Date >= day) 
+            ? TimeLogDayType.CompanyHoliday : TimeLogDayType.None;
+    
+    return total;
+    ```
+
+    :white_check_mark: Good  
+    ```csharp
+    // some code before
+    total.DayType = GetDateType(day);
+
+    return total;
+
+    TimeLogDayType GetDateType(DateTime date)
+    {
+        if (date.DayOfWeek == DayOfWeek.Sunday || date.DayOfWeek == DayOfWeek.Saturday)
+            return TimeLogDayType.Weekends;
+        else if (holidays.Any(h => h.StartDate.Date <= date && h.EndDate.Date >= date))
+            return TimeLogDayType.CompanyHoliday;
+        else
+            return TimeLogDayType.None;
+    }
+    ```
+
+
 
 ## Strings
 
@@ -527,7 +559,7 @@ A code standard is essential for development team code readability, consistency,
         _dbContext.Users.Where(user => user.IsActive)
                         .ToList();
     ```
-4. Use multiple from clauses instead of a join clause to access inner collections. For example, a collection of Student objects might each contain a collection of test scores
+4. Use multiple `from` clauses instead of a `join` clause to access inner collections. For example, a collection of Student objects might each contain a collection of test scores
    
    :x: Bad  
     ```csharp
