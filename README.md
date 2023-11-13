@@ -19,3 +19,7 @@ They aim to reduce software defects, encourage consistency in the code, and impr
 ### Links
 - [C# code conventions](/csharp-dotnet.md)
 - TBD
+
+## :star: How to contribute
+
+In case you wish to contribute to this repository, please do this by project forking and contribution by pull request. Detailed instructions can be found here [Contributing to projects](https://docs.github.com/en/get-started/quickstart/contributing-to-projects)
