@@ -23,6 +23,8 @@ A code standard is essential for development team code readability, consistency,
 [Async code](#async-code)  
 [Exceptions](#exceptions)  
 [LINQ](#linq)  
+[Comments](#comments)
+[Nullable Feature](#nullable-feature)  
 
 ---
 
@@ -603,4 +605,99 @@ A code standard is essential for development team code readability, consistency,
     ```
 2. Place the comment on a separate line, not at the end of a line of code.
 3. Make 1 blank line between comment and previous line of code
+4. XML Documentation Comments
+
+    :x: Bad
+    ```csharp
+    // Function to add two numbers
+    public int AddNumbers(int num1, int num2)
+    {
+        return num1 + num2;
+    }
+    ```
+    :white_check_mark: Good
+    ```csharp
+    /// <summary>
+    /// Calculates the sum of two integers.
+    /// </summary>
+    /// <param name="a">The first integer.</param>
+    /// <param name="b">The second integer.</param>
+    /// <returns>The sum of the two integers.</returns>
+    public int CalculateSum(int a, int b)
+    {
+        return a + b;
+    }
+    ```
+
+5. Use TAGS in Comments 
+    `CHECKME, DOCME, TESTME, PENDING`
+
+    :x: Bad  
+    ```csharp
+    // Refactor when nullable, need to document in confluence
+    public int CalculateSum(int a, int b)
+    {
+        //fix when 0, and cover by tests
+        return a + b;
+    }
+    ```
+    
+    :white_check_mark: Good 
+    ```csharp
+    //TODO: refactor with nullable implementation
+    //DOCME: should be documented
+    public int CalculateSum(int a, int b)
+    {
+        //FIXME: returns unexcpected value in case of some of value is 0
+        //TESTME: cover by unit tests
+        return a + b;
+    }
+    ```
+## Nullable Feature
+c# 8 and highier
+
+1. Use Nullable Value Types
+
+    :x: Bad 
+    ```csharp
+    int? nullableInt = new int?(); // Redundant instantiation
+    ```
+    :white_check_mark: Good  
+     ```csharp
+     int? nullableInt = null;
+     ```
+2. Handling Nullable Reference Types
+
+    :x: Bad 
+    ```csharp
+    string nullableString = null; // Missing nullable annotation
+    ```
+    :white_check_mark: Good  
+    ```csharp
+    string? nullableString = null;
+    ```
+3. Utilizing Null-conditional Operators
+
+    :x: Bad 
+    ```csharp
+    int length = nullableString.Length; // Direct access without null check
+    ```
+    :white_check_mark: Good  
+    ```csharp
+    int? length = nullableString?.Length;
+    if (length.HasValue)
+    {
+        // Handle non-null value
+    }
+    ```
+4. Using Null Coalescing Operator
+
+    :x: Bad 
+    ```csharp
+    string nonNullString = nullableString != null ? nullableString : "default"; // 
+    ```
+    :white_check_mark: Good  
+    ```csharp
+    string nonNullString = nullableString ?? "default";
+    ```
 
