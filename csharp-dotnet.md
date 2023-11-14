@@ -23,7 +23,7 @@ A code standard is essential for development team code readability, consistency,
 [Async code](#async-code)  
 [Exceptions](#exceptions)  
 [LINQ](#linq)  
-[Comments](#comments)
+[Comments](#comments)  
 [Nullable Feature](#nullable-feature)  
 
 ---
@@ -654,7 +654,7 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 ## Nullable Feature
-c# 8 and highier
+from С# 8.0 and highier
 
 1. Use Nullable Value Types
 
