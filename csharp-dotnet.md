@@ -654,6 +654,7 @@ A code standard is essential for development team code readability, consistency,
     }
     ```
 ## Nullable Feature
+c# 8 and highier
 
 1. Use Nullable Value Types
 
