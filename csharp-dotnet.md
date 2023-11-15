@@ -706,32 +706,32 @@ from С# 8.0 and highier
 
 1. Separate words with hyphens
 
-    :x: Bad
+    :x: Bad  
     `http://localhost:65003/api/timeLog/usersByAdmin`
 
-    :white_check_mark: Good
+    :white_check_mark: Good  
     `http://localhost:65003/api/timeLog/users-by-admin`
 
 2. Use nouns to represent resources
 
-    :x: Bad
+    :x: Bad  
     `http://localhost:65003/api/getEmployees`
 
-    :white_check_mark: Good
+    :white_check_mark: Good  
     `http://localhost:65003/api/employees`
 
 3. Use pluralized nouns for resources when possible unless they are singleton resources
 
-    :x: Bad
+    :x: Bad  
     `http://localhost:65003/api/employee/{id}`
 
-    :white_check_mark: Good
+    :white_check_mark: Good  
     `http://localhost:65003/api/employees/{id}`
 
 4. Avoid using file extensions
 
-    :x: Bad
+    :x: Bad  
     `http://localhost:65003/api/reports.json`
 
-    :white_check_mark: Good
+    :white_check_mark: Good  
     `http://localhost:65003/api/reports`
